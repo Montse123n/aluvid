@@ -26,16 +26,16 @@
                 <label for="price" class="block text-sm font-medium text-gray-700">Precio</label>
                 <input type="number" id="price" name="price" value="{{ isset($product) ? $product->price : '' }}" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
             </div>
-            <div class="mb-4">
-    <label for="category" class="block text-sm font-medium text-gray-700">Categoría</label>
-    <select id="category" name="category" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
-        <option value="">Seleccionar categoría</option>
-        <option value="Aluminio">Aluminio</option>
-        <option value="Vidrio">Vidrio</option>
-        <option value="Herrajes">Herrajes</option>
-    </select>
-</div>
 
+            <div class="mb-4">
+                <label for="category" class="block text-sm font-medium text-gray-700">Categoría</label>
+                <select id="category" name="category" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                    <option value="">Seleccionar categoría</option>
+                    <option value="Aluminio" {{ isset($product) && $product->category == 'Aluminio' ? 'selected' : '' }}>Aluminio</option>
+                    <option value="Vidrio" {{ isset($product) && $product->category == 'Vidrio' ? 'selected' : '' }}>Vidrio</option>
+                    <option value="Herrajes" {{ isset($product) && $product->category == 'Herrajes' ? 'selected' : '' }}>Herrajes</option>
+                </select>
+            </div>
 
             <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-200 active:bg-blue-600 transition duration-150 ease-in-out">
                 {{ isset($product) ? 'Actualizar Producto' : 'Agregar Producto' }}
@@ -57,6 +57,7 @@
                     <th class="py-2 px-4 border-b">Nombre</th>
                     <th class="py-2 px-4 border-b">Descripción</th>
                     <th class="py-2 px-4 border-b">Precio</th>
+                    <th class="py-2 px-4 border-b">Categoría</th> <!-- Nueva columna para Categoría -->
                     <th class="py-2 px-4 border-b">Acciones</th>
                 </tr>
             </thead>
@@ -66,6 +67,7 @@
                         <td>{{ $product->name }}</td>
                         <td>{{ $product->description }}</td>
                         <td>${{ $product->price }}</td>
+                        <td>{{ $product->category }}</td> <!-- Mostrar la categoría del producto -->
                         <td>
                             <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning">Editar</a>
                             <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
