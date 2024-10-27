@@ -1,12 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    table img {
+        width: 64px; /* Ajusta el ancho que desees */
+        height: 64px; /* Ajusta la altura que desees */
+        object-fit: contain; /* Asegura que la imagen se ajuste sin recortarse */
+    }
+</style>
 <div class="container mx-auto mt-6">
     <h1 class="text-2xl font-bold">Gestión de Productos</h1>
 
     <!-- Formulario para crear o editar un producto -->
     <div class="mt-4">
-        <form action="{{ isset($product) ? route('products.update', $product->id) : route('products.store') }}" method="POST">
+        <form action="{{ isset($product) ? route('products.update', $product->id) : route('products.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             @if(isset($product))
                 @method('PUT')
@@ -37,6 +44,11 @@
                 </select>
             </div>
 
+            <div class="mb-4">
+                <label for="image" class="block text-sm font-medium text-gray-700">Imagen del Producto</label>
+                <input type="file" id="image" name="image" class="mt-1 block w-full border border-gray-300 rounded-md p-2" accept="image/*">
+            </div>
+
             <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-200 active:bg-blue-600 transition duration-150 ease-in-out">
                 {{ isset($product) ? 'Actualizar Producto' : 'Agregar Producto' }}
             </button>
@@ -57,7 +69,8 @@
                     <th class="py-2 px-4 border-b">Nombre</th>
                     <th class="py-2 px-4 border-b">Descripción</th>
                     <th class="py-2 px-4 border-b">Precio</th>
-                    <th class="py-2 px-4 border-b">Categoría</th> <!-- Nueva columna para Categoría -->
+                    <th class="py-2 px-4 border-b">Categoría</th>
+                    <th class="py-2 px-4 border-b">Imagen</th>
                     <th class="py-2 px-4 border-b">Acciones</th>
                 </tr>
             </thead>
@@ -67,7 +80,14 @@
                         <td>{{ $product->name }}</td>
                         <td>{{ $product->description }}</td>
                         <td>${{ $product->price }}</td>
-                        <td>{{ $product->category }}</td> <!-- Mostrar la categoría del producto -->
+                        <td>{{ $product->category }}</td>
+                        <td>
+                            @if($product->image_url)
+                                <img src="{{ asset('storage/' . $product->image_url) }}" alt="{{ $product->name }}" class="h-16 w-16 object-cover">
+                            @else
+                                <span>No hay imagen</span>
+                            @endif
+                        </td>
                         <td>
                             <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning">Editar</a>
                             <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">

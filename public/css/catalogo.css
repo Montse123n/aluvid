@@ -1,0 +1,77 @@
+/* Estilo general para el título del catálogo */
+.catalogo-title {
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Título de cada categoría */
+.categoria-title {
+    font-size: 2em;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    color: #007bff;
+    text-align: left;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+}
+
+/* Diseño de cuadrícula para el contenedor de productos */
+.catalogo-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Estilo de tarjeta para cada producto */
+.producto-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.producto-card:hover {
+    transform: scale(1.05);
+}
+
+/* Imagen del producto */
+.producto-image {
+    width: 100%;
+    height: 150px; /* Altura fija para el contenedor de la imagen */
+    overflow: hidden; /* Oculta el contenido que sobrepase el contenedor */
+}
+
+.producto-image img {
+    width: 100%;
+    height: auto; /* Mantiene la proporción de la imagen */
+    max-height: 100%; /* Asegura que la imagen no supere la altura del contenedor */
+    object-fit: contain; /* Asegura que la imagen se ajuste al contenedor sin recortarse */
+}
+
+/* Detalles del producto */
+.producto-details {
+    padding: 15px;
+    text-align: center;
+}
+
+.producto-details h3 {
+    font-size: 1.3em;
+    margin: 0;
+    color: #333;
+}
+
+.producto-descripcion {
+    color: #666;
+    margin: 10px 0;
+    font-size: 0.9em;
+}
+
+.producto-precio {
+    font-weight: bold;
+    color: #333;
+    margin-top: 5px;
+}

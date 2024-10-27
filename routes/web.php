@@ -5,9 +5,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
+use App\Models\Producto;
+
 
 
 Route::get('/admin', [AdminController::class, 'index'])->name('admin');
+
+// Ruta para el catálogo de productos
+
+Route::get('/catalogo', [ProductController::class, 'showCatalog'])->middleware('auth')->name('catalogo');
 
 
 Route::middleware(['auth', 'admin'])->group(function () {
