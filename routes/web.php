@@ -1,56 +1,51 @@
 <?php
-
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\auth\LoginController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AdminController;
-use App\Models\Producto;
+use Illuminate\Support\Facades\Route;
 
-
-
-Route::get('/admin', [AdminController::class, 'index'])->name('admin');
-
-// Ruta para el catálogo de productos
-
-Route::get('/catalogo', [ProductController::class, 'showCatalog'])->middleware('auth')->name('catalogo');
-
-
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/products', [AdminController::class, 'index'])->name('products.index');
-    // Otras rutas que solo debe tener el admin
-});
-
-
-
-Route::get('products', [ProductController::class, 'index'])->name('products.index');
-Route::post('products/storeOrUpdate', [ProductController::class, 'storeOrUpdate'])->name('products.storeOrUpdate');
-Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-
-
+// Página principal
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
-Route::resource('products', ProductController::class);
-
-
+// Dashboard para usuarios logueados
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Rutas del perfil de usuario
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Autenticación: Login
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
 
-Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+// Registro (solo para usuarios normales)
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register']);
 
-// Ruta para manejar el inicio de sesión
-Route::post('login', [LoginController::class, 'login']);
+// Logout
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+// Rutas exclusivas para Administradores y Trabajadores
+Route::middleware(['auth', 'role:administrador,trabajador'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('/admin/tipos', [AdminController::class, 'tipos'])->name('admin.tipos');
+    Route::get('/admin/productos', [AdminController::class, 'productos'])->name('admin.productos');
+    Route::get('/admin/crear-tipo', [AdminController::class, 'crearTipo'])->name('admin.crear_tipo');
+    Route::get('/admin/crear-producto', [AdminController::class, 'crearProducto'])->name('admin.crear_producto');
+});
 
+// Rutas exclusivas para Administradores
+Route::middleware(['auth', 'role:administrador'])->group(function () {
+    Route::get('/admin/perfiles', [AdminController::class, 'perfiles'])->name('admin.perfiles');
+});
 
-require __DIR__.'/auth.php';
+// Incluye las rutas de autenticación
+require __DIR__ . '/auth.php';

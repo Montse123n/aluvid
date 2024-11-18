@@ -6,8 +6,11 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
+
+
     public function index()
     {
-        return view('admin.index'); // Asegúrate de que la vista exista
+        $sectores = ['Aluminio', 'Vidrio', 'Herrajes']; // Lista de sectores, podría venir de una base de datos
+        return view('admin.index', compact('sectores'));
     }
 }

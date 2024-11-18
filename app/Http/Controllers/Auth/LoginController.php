@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -7,15 +8,31 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    // Método que se llama después de que un usuario inicia sesión
-    protected function authenticated(Request $request, $user)
+    public function showLoginForm()
     {
-        // Verificar si el usuario es el administrador
-        if ($user->email === 'garciamontse1974@gmail.com' && $user->password === Hash::make('Gar07cia03')) {
-            return redirect()->route('productos.create'); // Ruta para el registro de productos
-        }
-    
-        // Si no es el administrador, redirigir al catálogo
-        return redirect()->route('catalogo-productos'); // Ruta para el catálogo de productos
+        return view('auth.login');
     }
+    public function login(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    if (Auth::attempt($request->only('email', 'password'))) {
+        $role = auth()->user()->role;
+
+        if ($role === 'administrador') {
+            return redirect()->route('admin.index');
+        } elseif ($role === 'trabajador') {
+            return redirect()->route('admin.index'); // Trabajador ve las mismas páginas que el admin excepto perfiles
+        } else {
+            return redirect()->route('home'); // Usuario normal
+        }
+    }
+
+    return back()->withErrors(['email' => 'Credenciales incorrectas']);
 }
+
+}
+

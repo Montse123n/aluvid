@@ -1,0 +1,51 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f6f8;
+    color: #333;
+}
+/* Navbar */
+.navbar-custom {
+    background-color: #2a3d66; /* Azul oscuro elegante */
+    padding: 1rem 0;
+}
+.navbar-custom .navbar-brand {
+    color: #ffd700 !important; /* Dorado suave */
+    font-weight: bold;
+    font-size: 1.6rem;
+}
+.navbar-custom .nav-link {
+    color: #ffffff !important;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+.navbar-custom .nav-link:hover {
+    color: #ffd700 !important; /* Dorado en hover */
+}
+/* Dropdown custom */
+.dropdown-menu-custom {
+    background-color: #2a3d66;
+}
+.dropdown-menu-custom .dropdown-item {
+    color: #ffffff !important;
+}
+.dropdown-menu-custom .dropdown-item:hover {
+    background-color: #ffd700;
+    color: #2a3d66 !important;
+}
+/* Footer */
+.footer-custom {
+    background-color: #2a3d66;
+    color: #cccccc;
+    padding: 3rem 0;
+}
+.footer-custom .footer-title {
+    color: #ffd700;
+    font-weight: bold;
+}
+.footer-custom a {
+    color: #cccccc;
+    text-decoration: none;
+}
+.footer-custom a:hover {
+    color: #ffffff;
+}

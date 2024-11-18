@@ -1,77 +1,131 @@
-/* Estilo general para el título del catálogo */
-.catalogo-title {
-    text-align: center;
-    font-size: 2.5em;
-    margin-bottom: 20px;
-    color: #333;
+/* Estilos generales */
+body {
+    background-color: #f5f5f5; /* Color neutro para fondo */
+    font-family: 'Roboto', sans-serif; /* Fuente más formal */
 }
 
-/* Título de cada categoría */
-.categoria-title {
-    font-size: 2em;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    color: #007bff;
-    text-align: left;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 5px;
+/* Título principal */
+h1 {
+    font-size: 3.2rem;
+    font-weight: 600;
+    color: #004085; /* Azul más formal */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 50px;
 }
 
-/* Diseño de cuadrícula para el contenedor de productos */
-.catalogo-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px;
+/* Barra de navegación */
+.navbar {
+    background-color: #ffffff; /* Blanco limpio para la barra */
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra ligera */
 }
 
-/* Estilo de tarjeta para cada producto */
-.producto-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-    transition: transform 0.2s;
+/* Enlaces en la barra de navegación */
+.navbar-nav .nav-link {
+    font-weight: 500;
+    color: #007bff; /* Azul formal para los enlaces */
+    transition: color 0.3s ease;
 }
 
-.producto-card:hover {
+/* Estilo de los botones de categoría */
+.navbar-nav .nav-link.btn-categoria {
+    background-color: #007bff; /* Azul profesional */
+    color: white;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    margin-right: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Efecto al pasar el ratón */
+.navbar-nav .nav-link.btn-categoria:hover {
+    background-color: #0056b3; /* Azul más oscuro en hover */
+    color: #ffffff;
     transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Imagen del producto */
-.producto-image {
-    width: 100%;
-    height: 150px; /* Altura fija para el contenedor de la imagen */
-    overflow: hidden; /* Oculta el contenido que sobrepase el contenedor */
+/* Estilo de los títulos de las categorías */
+h2 {
+    font-size: 2rem;
+    font-weight: 500;
+    color: #343a40; /* Gris oscuro */
+    margin-bottom: 30px;
+    text-transform: capitalize;
 }
 
-.producto-image img {
-    width: 100%;
-    height: auto; /* Mantiene la proporción de la imagen */
-    max-height: 100%; /* Asegura que la imagen no supere la altura del contenedor */
-    object-fit: contain; /* Asegura que la imagen se ajuste al contenedor sin recortarse */
+/* Estilos de las tarjetas de productos */
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Detalles del producto */
-.producto-details {
-    padding: 15px;
-    text-align: center;
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
-.producto-details h3 {
-    font-size: 1.3em;
-    margin: 0;
-    color: #333;
+.card-img-top {
+    object-fit: cover;
+    height: 250px;
 }
 
-.producto-descripcion {
-    color: #666;
-    margin: 10px 0;
-    font-size: 0.9em;
+.card-body {
+    background-color: #ffffff;
+    border-radius: 0 0 15px 15px;
 }
 
-.producto-precio {
-    font-weight: bold;
-    color: #333;
-    margin-top: 5px;
+.card-title {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: #212529; /* Gris oscuro */
+    margin-bottom: 15px;
+}
+
+.card-text {
+    color: #6c757d; /* Gris suave */
+    margin-bottom: 15px;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* Botón de compra */
+.btn-primary {
+    background-color: #007bff; /* Azul profesional */
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Azul más oscuro en hover */
+    transform: translateY(-3px);
+}
+
+/* Espaciado entre tarjetas */
+.mb-4 {
+    margin-bottom: 30px;
+}
+
+/* Espaciado entre elementos */
+.row-cols-md-3 {
+    margin-top: 30px;
+}
+
+/* Adaptación móvil */
+@media (max-width: 768px) {
+    .row-cols-md-3 {
+        row-gap: 30px;
+    }
+    .card-title {
+        font-size: 1.4rem;
+    }
 }
