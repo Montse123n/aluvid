@@ -11,13 +11,6 @@ use App\Models\Tipo;
 class ProductController extends Controller
 {
 
-//public function show($sectorId)
-//{
-    // Encuentra el sector con sus tipos y productos relacionados
-  //  $sector = Sector::with('tipos.productos')->findOrFail($sectorId);
-
-    //return view('productos.tipos', compact('tipos'));
-//}
 public function showSectores()
 {
     $sectores = Sector::all();

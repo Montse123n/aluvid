@@ -4,10 +4,7 @@
 <div class="container my-4">
     <h1 class="text-center mb-4 display-5">Tipos de Productos para el Sector: <span class="text-primary">{{ $sector->nombre }}</span></h1>
     
-    <!-- Botón de Regresar -->
-    <div class="d-flex justify-content-start mb-4">
-        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">← Regresar</a>
-    </div>
+    
 
     <!-- Formulario de búsqueda -->
     <form action="{{ route('admin.showTipos', ['sectorId' => $sector->id]) }}" method="GET" class="mb-4">
@@ -22,17 +19,30 @@
         <p class="text-center text-muted">No hay tipos de productos para este sector.</p>
     @else
         <div class="row">
-            @foreach($tipos as $tipo)
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm h-100 transition-card">
-                        <div class="card-body d-flex flex-column text-center">
-                            <h5 class="card-title font-weight-bold">{{ $tipo->nombre }}</h5>
-                            <p class="card-text text-muted">{{ $tipo->descripcion ?? 'Descripción no disponible.' }}</p>
-                            <a href="{{ route('admin.showProductos', ['tipoId' => $tipo->id]) }}" class="btn btn-outline-primary mt-auto">Ver Productos</a>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
+        @foreach($tipos as $tipo)
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">{{ $tipo->nombre }}</h5>
+                <p class="card-text text-muted">{{ $tipo->descripcion }}</p>
+                <a href="{{ route('admin.showProductos', ['tipoId' => $tipo->id]) }}" class="btn btn-outline-primary mt-auto">Ver Productos</a>
+                <!-- Botón para editar -->
+                <a href="{{ route('admin.editTipo', ['tipoId' => $tipo->id]) }}" class="btn btn-warning btn-sm">Editar</a>
+
+                <!-- Formulario para eliminar -->
+                <form action="{{ route('admin.destroyTipo', ['tipoId' => $tipo->id]) }}" method="POST" class="d-inline-block">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('¿Estás seguro de que deseas eliminar este tipo?');">
+                        Eliminar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+@endforeach
+
         </div>
     @endif
 

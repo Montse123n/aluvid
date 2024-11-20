@@ -1,35 +1,75 @@
-name: CI/CD Pipeline
+name: Laravel CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '20.18'
-          
-      - name: Install dependencies
-        run: npm install
-        
-      - name: Run tests
-        run: npm test
-        
-      - name: Build the project
-        run: npm run build
-        
-      - name: Deploy to production
-        if: success()
-        run: npm run deploy
+    # Paso 1: Clonar el repositorio
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Paso 2: Configurar PHP y Composer
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.2
+        extensions: mbstring, pdo, tokenizer, xml, bcmath
+
+    - name: Install Composer dependencies
+      run: composer install --no-progress --no-suggest --prefer-dist
+
+    # Paso 3: Instalar Node.js para assets front-end
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install front-end dependencies
+      run: npm install
+
+    - name: Build front-end assets
+      run: npm run build
+
+    # Paso 4: Ejecutar pruebas
+    - name: Run Laravel tests
+      run: php artisan test
+
+    # Paso 5: Empaquetar artefactos
+    - name: Package application
+      run: zip -r laravel-app.zip . -x "node_modules/*" "vendor/*"
+      env:
+        APP_ENV: production
+
+    # Paso 6: Subir artefacto
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: laravel-artifact
+        path: laravel-app.zip
+
+  docker-build-and-deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+    # Paso 1: Clonar el repositorio
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Paso 2: Construir imagen Docker
+    - name: Build Docker image
+      run: docker build -t laravel-app .
+
+    # Paso 3: Ejecutar contenedor Docker
+    - name: Run Docker container
+      run: docker run -d -p 8080:80 --name laravel-app laravel-app
+
+    # Paso 4: Verificar despliegue
+    - name: Verify deployment
+      run: curl http://localhost:8080

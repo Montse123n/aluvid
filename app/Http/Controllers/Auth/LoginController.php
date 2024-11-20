@@ -3,36 +3,47 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    public function showLoginForm()
+    use AuthenticatesUsers;
+
+    /**
+     * Where to redirect users after login.
+     *
+     * @var string
+     */
+    protected $redirectTo = '/home'; // Puedes dejarlo como fallback.
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
     {
-        return view('auth.login');
+        $this->middleware('guest')->except('logout');
+        $this->middleware('auth')->only('logout');
     }
-    public function login(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
 
-    if (Auth::attempt($request->only('email', 'password'))) {
-        $role = auth()->user()->role;
-
-        if ($role === 'administrador') {
-            return redirect()->route('admin.index');
-        } elseif ($role === 'trabajador') {
-            return redirect()->route('admin.index'); // Trabajador ve las mismas páginas que el admin excepto perfiles
-        } else {
-            return redirect()->route('home'); // Usuario normal
+    /**
+     * Handle redirection after login based on user role.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->hasRole('administrador')) {
+            return redirect()->route('admin.index'); // Ruta para administradores
+        } elseif ($user->hasRole('usuario')) {
+            return redirect()->route('productos.sectores'); // Ruta para usuarios normales
         }
+
+        return redirect($this->redirectTo); // Fallback si no hay roles
     }
-
-    return back()->withErrors(['email' => 'Credenciales incorrectas']);
-}
-
 }
 

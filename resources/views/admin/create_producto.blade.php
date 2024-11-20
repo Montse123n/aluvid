@@ -31,10 +31,6 @@
             <label for="descripcion" class="form-label">Descripción</label>
             <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
         </div>
-        <div class="mb-3">
-            <label for="medidas" class="form-label">Medidas</label>
-            <textarea class="form-control" id="medidas" name="medidas" rows="3" required></textarea>
-        </div>
         
         <div class="mb-3">
             <label for="precio" class="form-label">Precio</label>

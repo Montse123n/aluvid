@@ -4,16 +4,16 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Middleware\RoleMiddleware;
+use App\Http\Controllers\ProductController;
 // Página principal
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// Dashboard para usuarios logueados
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+Route::get('/sectores', [ProductController::class, 'showSectores'])->name('productos.sectores');
 
 // Rutas del perfil de usuario
 Route::middleware('auth')->group(function () {
@@ -22,30 +22,54 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Autenticación: Login
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
+use App\Http\Controllers\HomeController;
 
-// Registro (solo para usuarios normales)
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register']);
+Auth::routes();
 
-// Logout
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+// Rutas para usuarios (carpeta productos)
 
-// Rutas exclusivas para Administradores y Trabajadores
-Route::middleware(['auth', 'role:administrador,trabajador'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
-    Route::get('/admin/tipos', [AdminController::class, 'tipos'])->name('admin.tipos');
-    Route::get('/admin/productos', [AdminController::class, 'productos'])->name('admin.productos');
-    Route::get('/admin/crear-tipo', [AdminController::class, 'crearTipo'])->name('admin.crear_tipo');
-    Route::get('/admin/crear-producto', [AdminController::class, 'crearProducto'])->name('admin.crear_producto');
+
+// Rutas para usuarios con rol "usuario"
+Route::middleware(['auth', RoleMiddleware::class . ':usuario'])->group(function () {
+    Route::get('/sectores', [ProductController::class, 'showSectores'])->name('productos.sectores');
+    Route::get('/tipos/{sectorId}', [ProductController::class, 'showTipos'])->name('sector.tipos');
+    Route::get('/tipos/{tipoId}/productos', [ProductController::class, 'showProductos'])->name('tipo.productos');
+    Route::view('/productos', 'productos.productos');
+    Route::view('/cotizaciones', 'productos.cotizaciones');
 });
 
-// Rutas exclusivas para Administradores
-Route::middleware(['auth', 'role:administrador'])->group(function () {
-    Route::get('/admin/perfiles', [AdminController::class, 'perfiles'])->name('admin.perfiles');
+// Rutas para administradores con rol "administrador"
+use App\Http\Controllers\AdminProductController;
+
+// Rutas exclusivas para administradores
+Route::middleware(['auth', RoleMiddleware::class . ':administrador'])->group(function () {
+    Route::get('/admin', [AdminProductController::class, 'index'])->name('admin.index'); // Página principal del administrador
+    Route::get('/admin/perfiles', [AdminProductController::class, 'perfiles'])->name('admin.perfiles'); // Gestión de trabajadores
+    Route::get('/admin/tipos/{sectorId}/create', [AdminProductController::class, 'createTipo'])->name('admin.createTipo');
+    Route::post('/admin/crear-tipo', [AdminProductController::class, 'storeTipo'])->name('admin.crear_tipo');
+    Route::post('/admin/tipos/{sectorId}/store', [AdminProductController::class, 'storeTipo'])->name('admin.storeTipo');
+    Route::get('/admin/tipos/{sectorId}', [AdminProductController::class, 'showTipos'])->name('admin.showTipos');
+    Route::get('/admin/tipos/{tipoId}/edit', [AdminProductController::class, 'editTipo'])->name('admin.editTipo');
+    Route::put('/admin/tipos/{tipoId}', [AdminProductController::class, 'updateTipo'])->name('admin.updateTipo');
+    Route::delete('/admin/tipos/{tipoId}', [AdminProductController::class, 'destroyTipo'])->name('admin.destroyTipo');
+    Route::get('/admin/productos/{tipoId}', [AdminProductController::class, 'showProductos'])->name('admin.showProductos');
+    Route::get('/admin/tipos/{tipoId}/productos/create', [AdminProductController::class, 'createProducto'])->name('admin.createProducto');
+    Route::post('/admin/tipos/{tipoId}/productos', [AdminProductController::class, 'storeProducto'])->name('admin.storeProducto');  
+    Route::get('/admin/productos/{id}/edit', [AdminProductController::class, 'editProducto'])->name('admin.editProducto');
+    Route::put('/admin/productos/{id}', [AdminProductController::class, 'updateProducto'])->name('admin.updateProducto');
+    Route::delete('/admin/delete-producto/{producto}', [AdminProductController::class, 'destroyProducto'])->name('admin.destroyProducto');
 });
 
-// Incluye las rutas de autenticación
+use App\Http\Controllers\CotizacionController;
+
+// Rutas de cotizaciones
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/cotizaciones/vidrio', [CotizacionController::class, 'showVidrioCotizacion'])->name('cotizaciones.vidrio');
+    Route::post('/cotizaciones/vidrio', [CotizacionController::class, 'calcularCotizacion'])->name('cotizaciones.calcular');
+});
+
 require __DIR__ . '/auth.php';
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

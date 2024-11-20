@@ -57,6 +57,44 @@ public function showProductos($tipoId)
 
         return redirect()->route('admin.showTipos', ['sectorId' => $sectorId])->with('success', 'Tipo creado con éxito.');
     }
+    public function editTipo($tipoId)
+    {
+        $tipo = Tipo::findOrFail($tipoId);
+        return view('admin.edit_tipo', compact('tipo'));
+    }
+
+    // Actualizar un tipo existente
+    public function updateTipo(Request $request, $tipoId)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+        ]);
+
+        $tipo = Tipo::findOrFail($tipoId);
+        $tipo->update([
+            'nombre' => $request->nombre,
+            'descripcion' => $request->descripcion,
+        ]);
+
+        return redirect()->route('admin.showTipos', ['sectorId' => $tipo->sector_id])
+            ->with('success', 'Tipo actualizado con éxito.');
+    }
+
+    // Eliminar un tipo
+    public function destroyTipo($tipoId)
+    {
+        $tipo = Tipo::findOrFail($tipoId);
+
+        if ($tipo->productos()->count() > 0) {
+            return redirect()->back()->with('error', 'No se puede eliminar un tipo con productos asociados.');
+        }
+
+        $tipo->delete();
+
+        return redirect()->route('admin.showTipos', ['sectorId' => $tipo->sector_id])
+            ->with('success', 'Tipo eliminado con éxito.');
+    }
 
     // Mostrar formulario de creación de producto
     public function createProducto($tipoId)
@@ -71,11 +109,10 @@ public function showProductos($tipoId)
             'nombre' => 'required|string|max:255',
             'descripcion' => 'required|string',
             'precio' => 'required|numeric|min:0',
-            'medidas' => 'required|string',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $productData = $request->only(['nombre', 'descripcion', 'precio', 'medidas']);
+        $productData = $request->only(['nombre', 'descripcion', 'precio']);
         $productData['tipo_id'] = $tipoId;
 
         if ($request->hasFile('imagen')) {

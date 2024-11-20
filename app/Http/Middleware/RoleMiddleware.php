@@ -3,26 +3,25 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class RoleMiddleware
 {
     /**
-     * Maneja la solicitud entrante.
+     * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
-     * @param  string  $roles
+     * @param  string  $role
      * @return mixed
      */
-    public function handle($request, Closure $next, $roles)
+    public function handle(Request $request, Closure $next, string $role)
     {
-        $rolesArray = explode(',', $roles);
-
-        if (!Auth::check() || !in_array(Auth::user()->role, $rolesArray)) {
-            abort(403, 'No tienes permisos para acceder a esta página.');
+        if (!$request->user() || !$request->user()->hasRole($role)) {
+            abort(403, 'No tienes permiso para acceder a esta página.');
         }
 
         return $next($request);
     }
 }
+
