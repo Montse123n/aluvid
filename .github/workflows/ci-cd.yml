@@ -44,10 +44,14 @@ jobs:
     - name: Generate application key
       run: php artisan key:generate
 
+    # Paso 4: Reiniciar base de datos antes de migrar
+    - name: Reset database
+      run: php artisan migrate:reset --force --env=testing
+
     - name: Run database migrations and seed
       run: php artisan migrate --seed --force --env=testing
 
-    # Paso 4: Instalar Node.js para assets front-end
+    # Paso 5: Instalar Node.js para assets front-end
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
@@ -66,17 +70,17 @@ jobs:
           exit 1;
         fi
 
-    # Paso 5: Ejecutar pruebas
+    # Paso 6: Ejecutar pruebas
     - name: Run Laravel tests
       run: php artisan test
 
-    # Paso 6: Empaquetar artefactos
+    # Paso 7: Empaquetar artefactos
     - name: Package application
       run: zip -r laravel-app.zip . -x "node_modules/*" "vendor/*"
       env:
         APP_ENV: production
 
-    # Paso 7: Subir artefacto
+    # Paso 8: Subir artefacto
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
