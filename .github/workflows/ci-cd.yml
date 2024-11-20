@@ -24,7 +24,22 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --no-progress --no-suggest --prefer-dist
 
-    # Paso 3: Instalar Node.js para assets front-end
+    # Paso 3: Configurar entorno para pruebas
+    - name: Create SQLite database
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
+
+    - name: Set up environment
+      run: cp .env.example .env
+
+    - name: Generate application key
+      run: php artisan key:generate
+
+    - name: Run database migrations
+      run: php artisan migrate --force --env=testing
+
+    # Paso 4: Instalar Node.js para assets front-end
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
@@ -36,40 +51,20 @@ jobs:
     - name: Build front-end assets
       run: npm run build
 
-    # Paso 4: Ejecutar pruebas
+    # Paso 5: Ejecutar pruebas
     - name: Run Laravel tests
       run: php artisan test
 
-    # Paso 5: Empaquetar artefactos
+    # Paso 6: Empaquetar artefactos
     - name: Package application
       run: zip -r laravel-app.zip . -x "node_modules/*" "vendor/*"
       env:
         APP_ENV: production
 
-    # Paso 6: Subir artefacto
+    # Paso 7: Subir artefacto
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: laravel-artifact
         path: laravel-app.zip
 
-  docker-build-and-deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-
-    steps:
-    # Paso 1: Clonar el repositorio
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    # Paso 2: Construir imagen Docker
-    - name: Build Docker image
-      run: docker build -t laravel-app .
-
-    # Paso 3: Ejecutar contenedor Docker
-    - name: Run Docker container
-      run: docker run -d -p 8080:80 --name laravel-app laravel-app
-
-    # Paso 4: Verificar despliegue
-    - name: Verify deployment
-      run: curl http://localhost:8080
