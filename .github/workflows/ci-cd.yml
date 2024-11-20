@@ -44,14 +44,34 @@ jobs:
     - name: Generate application key
       run: php artisan key:generate
 
-    # Paso 4: Reiniciar base de datos antes de migrar
-    - name: Reset database
-      run: php artisan migrate:reset --force --env=testing
+    # Paso 4: Crear migración adicional para agregar la columna `name`
+    - name: Create migration to fix sectors table
+      run: |
+        php artisan make:migration add_name_to_sectores_table --table=sectores
+        echo "<?php
+        use Illuminate\\Database\\Migrations\\Migration;
+        use Illuminate\\Database\\Schema\\Blueprint;
+        use Illuminate\\Support\\Facades\\Schema;
 
+        return new class extends Migration {
+            public function up() {
+                Schema::table('sectores', function (Blueprint \$table) {
+                    \$table->string('name')->after('id');
+                });
+            }
+
+            public function down() {
+                Schema::table('sectores', function (Blueprint \$table) {
+                    \$table->dropColumn('name');
+                });
+            }
+        };" > database/migrations/$(ls -t database/migrations | head -n 1)
+
+    # Paso 5: Ejecutar migraciones y seeders
     - name: Run database migrations and seed
       run: php artisan migrate --seed --force --env=testing
 
-    # Paso 5: Instalar Node.js para assets front-end
+    # Paso 6: Instalar Node.js para assets front-end
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
@@ -70,19 +90,20 @@ jobs:
           exit 1;
         fi
 
-    # Paso 6: Ejecutar pruebas
+    # Paso 7: Ejecutar pruebas
     - name: Run Laravel tests
       run: php artisan test
 
-    # Paso 7: Empaquetar artefactos
+    # Paso 8: Empaquetar artefactos
     - name: Package application
       run: zip -r laravel-app.zip . -x "node_modules/*" "vendor/*"
       env:
         APP_ENV: production
 
-    # Paso 8: Subir artefacto
+    # Paso 9: Subir artefacto
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: laravel-artifact
         path: laravel-app.zip
+
