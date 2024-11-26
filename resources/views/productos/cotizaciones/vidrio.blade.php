@@ -4,13 +4,13 @@
 <div class="container my-5">
     <h1 class="text-center text-primary mb-4">Cotización - Vidrio</h1>
 
-    <!-- Mostrar mensaje de éxito -->
-    @if(session('success'))
+    <!-- Mostrar mensaje de resultado -->
+    @if(isset($resultado))
         <div class="alert alert-success">
-            <strong>{{ session('success') }}</strong>
-            <p><strong>Producto:</strong> {{ session('producto') }}</p>
-            <p><strong>Precio Total:</strong> ${{ session('precio_total') }}</p>
-            <p><strong>Medidas:</strong> {{ session('medidas') }}</p>
+            <h4 class="text-center">Resultado de la Cotización</h4>
+            <p><strong>Producto:</strong> {{ $resultado['producto'] }}</p>
+            <p><strong>Dimensiones:</strong> {{ $resultado['ancho'] }} cm x {{ $resultado['alto'] }} cm</p>
+            <p><strong>Precio Total:</strong> ${{ $resultado['precio_total'] }}</p>
         </div>
     @endif
 

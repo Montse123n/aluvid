@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Sector;
+use App\Models\Subproducto;
 use App\Models\Tipo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -30,8 +31,18 @@ class AdminProductController extends Controller
     // Mostrar productos específicos dentro de un tipo
 public function showProductos($tipoId)
 {
-    $tipo = Tipo::findOrFail($tipoId); // Encuentra el tipo seleccionado
-    $productos = Product::where('tipo_id', $tipoId)->get(); // Obtiene los productos del tipo seleccionado
+    $tipo = Tipo::findOrFail($tipoId);
+
+    // Ordenar los productos por nombre
+    $productos = Product::where('tipo_id', $tipoId)
+        ->orderBy('nombre', 'asc') // Ordenar por nombre en orden ascendente
+        ->get();
+
+    // Asegurar que los subproductos de cada producto estén ordenados
+    foreach ($productos as $producto) {
+        $producto->subproductos = $producto->subproductos()->orderBy('nombre', 'asc')->get();
+    }
+
     return view('admin.productos', compact('tipo', 'productos'));
 }
 
@@ -170,9 +181,93 @@ public function showProductos($tipoId)
         return redirect()->back()->with('success', 'Producto eliminado correctamente.');
     }
     public function getSectoresConTipos()
+    {
+        // Obtiene todos los sectores con sus tipos
+        return Sector::with('tipos')->get();
+    }
+    public function showSubproductos($productoId)
 {
-    // Obtiene todos los sectores con sus tipos
-    return Sector::with('tipos')->get();
+    $producto = Product::with('subproductos')->findOrFail($productoId);
+    return view('admin.subproductos', compact('producto'));
 }
+public function createSubproducto($productoId)
+{
+    $producto = Product::findOrFail($productoId);
+    return view('admin.create_subproducto', compact('producto'));
+}
+
+public function storeSubproducto(Request $request, $productoId)
+{
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'descripcion' => 'required|string',
+        'precio' => 'nullable|numeric|min:0', // Validación para precio
+        'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    $subproductoData = $request->only(['nombre', 'descripcion', 'precio']); // Incluir precio en los datos
+    $subproductoData['producto_id'] = $productoId;
+
+    if ($request->hasFile('imagen')) {
+        $path = $request->file('imagen')->store('subproductos', 'public');
+        $subproductoData['imagen_url'] = $path;
+    }
+
+    Subproducto::create($subproductoData);
+
+    return redirect()->route('admin.showProductos', ['tipoId' => Product::findOrFail($productoId)->tipo_id])
+        ->with('success', 'Subproducto creado con éxito.');
+}
+
+
+public function editSubproducto($id)
+{
+    $subproducto = Subproducto::findOrFail($id);
+    return view('admin.edit_subproducto', compact('subproducto'));
+}
+
+
+public function updateSubproducto(Request $request, $id)
+{
+    $subproducto = Subproducto::findOrFail($id);
+
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'descripcion' => 'required|string',
+        'precio' => 'nullable|numeric|min:0', // Validación para precio
+        'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    $subproductoData = $request->only(['nombre', 'descripcion', 'precio']); // Incluir precio en los datos
+
+    if ($request->hasFile('imagen')) {
+        if ($subproducto->imagen_url) {
+            Storage::disk('public')->delete($subproducto->imagen_url);
+        }
+        $path = $request->file('imagen')->store('subproductos', 'public');
+        $subproductoData['imagen_url'] = $path;
+    }
+
+    $subproducto->update($subproductoData);
+
+    return redirect()->route('admin.showProductos', ['tipoId' => $subproducto->producto->tipo_id])
+        ->with('success', 'Subproducto actualizado con éxito.');
+}
+
+
+public function destroySubproducto($id)
+{
+    $subproducto = Subproducto::findOrFail($id);
+
+    if ($subproducto->imagen_url) {
+        Storage::disk('public')->delete($subproducto->imagen_url);
+    }
+
+    $subproducto->delete();
+
+    return redirect()->back()->with('success', 'Subproducto eliminado correctamente.');
+}
+
+
 
 }

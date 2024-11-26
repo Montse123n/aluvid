@@ -196,7 +196,7 @@
                 </div>
             @endauth
             <ul>
-                <li><a href="/"><i class="fas fa-home"></i> Inicio</a></li>
+                <li><a href="/cotizaciones/vidrio"><i class="fas fa-calculator"></i> Cotizar</a></li>
                 <li><a href="/about"><i class="fas fa-info-circle"></i> Acerca de</a></li>
                 <li><a href="/services"><i class="fas fa-concierge-bell"></i> Servicios</a></li>
                 <li><a href="/contact"><i class="fas fa-envelope"></i> Contacto</a></li>

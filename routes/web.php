@@ -6,7 +6,16 @@ use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Controllers\ProductController;
-// Página principal
+use App\Http\Controllers\SectorController;
+
+// Proteger rutas de sectores con middleware 'auth'
+Route::middleware(['auth'])->group(function () {
+    Route::get('/sectores', [SectorController::class, 'index'])->name('sectores.index');
+    Route::get('/sectores/{sector}', [SectorController::class, 'show'])->name('sectores.show');
+});
+
+
+
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
@@ -36,6 +45,8 @@ Route::middleware(['auth', RoleMiddleware::class . ':usuario'])->group(function 
     Route::get('/tipos/{tipoId}/productos', [ProductController::class, 'showProductos'])->name('tipo.productos');
     Route::view('/productos', 'productos.productos');
     Route::view('/cotizaciones', 'productos.cotizaciones');
+    Route::get('/tipos/{tipoId}/productos', [ProductController::class, 'showProductos'])->name('tipo.productos');
+
 });
 
 // Rutas para administradores con rol "administrador"
@@ -58,14 +69,22 @@ Route::middleware(['auth', RoleMiddleware::class . ':administrador'])->group(fun
     Route::get('/admin/productos/{id}/edit', [AdminProductController::class, 'editProducto'])->name('admin.editProducto');
     Route::put('/admin/productos/{id}', [AdminProductController::class, 'updateProducto'])->name('admin.updateProducto');
     Route::delete('/admin/delete-producto/{producto}', [AdminProductController::class, 'destroyProducto'])->name('admin.destroyProducto');
+    Route::get('/admin/productos/{productoId}/subproductos', [AdminProductController::class, 'showSubproductos'])->name('admin.showSubproductos');
+    Route::get('/admin/productos/{productoId}/subproductos/create', [AdminProductController::class, 'createSubproducto'])->name('admin.createSubproducto');
+    Route::post('/admin/productos/{productoId}/subproductos', [AdminProductController::class, 'storeSubproducto'])->name('admin.storeSubproducto');
+    Route::get('/admin/subproductos/{id}/edit', [AdminProductController::class, 'editSubproducto'])->name('admin.editSubproducto');
+    Route::put('/admin/subproductos/{id}', [AdminProductController::class, 'updateSubproducto'])->name('admin.updateSubproducto');
+    Route::delete('/admin/subproductos/{id}', [AdminProductController::class, 'destroySubproducto'])->name('admin.destroySubproducto');
 });
 
 use App\Http\Controllers\CotizacionController;
 
 // Rutas de cotizaciones
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/cotizaciones/vidrio', [CotizacionController::class, 'showVidrioCotizacion'])->name('cotizaciones.vidrio');
-    Route::post('/cotizaciones/vidrio', [CotizacionController::class, 'calcularCotizacion'])->name('cotizaciones.calcular');
+
+Route::get('/cotizaciones/vidrio', [CotizacionController::class, 'index'])->name('cotizaciones.vidrio'); // Para mostrar la vista
+Route::post('/cotizaciones/vidrio', [CotizacionController::class, 'calcular'])->name('cotizaciones.calcular'); // Para procesar el formulario
+
 });
 
 require __DIR__ . '/auth.php';

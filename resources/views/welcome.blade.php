@@ -62,28 +62,61 @@
             font-size: 2.5rem;
         }
         .sector-card {
-            border: none;
-            border-radius: 10px;
-            overflow: hidden;
-            background-color: #f8f9fa;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .sector-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        }
-        .sector-card img {
+            position: relative;
             width: 100%;
-            height: 200px;
+            border: none;
+            overflow: hidden;
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 300px;
+        }
+
+        .sector-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .sector-card .sector-img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
         }
-        .sector-title {
-            font-size: 1.3rem;
+
+        .sector-card .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .sector-card:hover .overlay {
+            opacity: 1;
+        }
+
+        .overlay .sector-text {
+            font-size: 2rem;
+            font-weight: 600;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+            margin-bottom: 15px;
             color: #ffffff;
+        }
+
+        .overlay .btn {
             background-color: #007bff;
-            padding: 10px 15px;
-            text-align: center;
-            border-radius: 0 0 10px 10px;
+            border: none;
+            font-weight: 500;
+        }
+
+        .overlay .btn:hover {
+            background-color: #0056b3;
         }
 
         /* Footer */
@@ -119,7 +152,6 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Cotización</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Nosotros</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Iniciar Sesión</a></li>
                 </ul>
@@ -135,37 +167,36 @@
         </div>
     </header>
 
-    <!-- Nosotros -->
-    <section class="company-info">
-        <div class="container text-center py-5">
-            <h2 class="text-primary">Sobre Nosotros</h2>
-            <p class="text-muted">
-                Somos líderes en la industria de vidrios y aluminios, comprometidos en ofrecer productos de la más alta calidad y servicio excepcional.
-            </p>
-        </div>
-    </section>
-
     <!-- Sectores -->
     <section class="sectors-section">
         <div class="container">
             <h2>Nuestros Sectores</h2>
             <div class="row g-4">
-                <div class="col-md-4">
+                <div class="col-12">
                     <div class="sector-card">
-                        <img src="img/aluminio.jpg" alt="Aluminios">
-                        <div class="sector-title">Aluminios</div>
+                        <img src="img/aluminio.jpg" alt="Aluminios" class="sector-img">
+                        <div class="overlay">
+                            <h3 class="sector-text">Línea de Aluminios</h3>
+                            <a href="{{ route('sectores.show', ['sector' => 1]) }}" class="btn btn-primary">Explorar</a>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-12">
                     <div class="sector-card">
-                        <img src="img/vidrios.jpg" alt="Vidrios">
-                        <div class="sector-title">Vidrios</div>
+                        <img src="img/vidrios.jpg" alt="Vidrios" class="sector-img">
+                        <div class="overlay">
+                            <h3 class="sector-text">Línea de Vidrios</h3>
+                            <a href="{{ route('sectores.show', ['sector' => 2]) }}" class="btn btn-primary">Explorar</a>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-12">
                     <div class="sector-card">
-                        <img src="img/herrajes.jpg" alt="Herrajes">
-                        <div class="sector-title">Herrajes</div>
+                        <img src="img/herrajes.jpg" alt="Herrajes" class="sector-img">
+                        <div class="overlay">
+                            <h3 class="sector-text">Línea de Herrajes</h3>
+                            <a href="{{ route('sectores.show', ['sector' => 3]) }}" class="btn btn-primary">Explorar</a>
+                        </div>
                     </div>
                 </div>
             </div>

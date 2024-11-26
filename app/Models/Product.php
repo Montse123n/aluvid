@@ -19,4 +19,9 @@ class Product extends Model
     {
         return $this->belongsTo(Tipo::class);
     }
+    public function subproductos()
+    {
+        return $this->hasMany(Subproducto::class, 'producto_id');
+    }
+
 }
