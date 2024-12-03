@@ -32,116 +32,42 @@
         }
 
         /* Navbar */
-        .navbar-custom {
+        .navbar {
             background: linear-gradient(90deg, var(--blue-dark), var(--blue-medium));
             color: var(--white);
-            height: 60px;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
+            padding: 10px 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        .navbar-custom .navbar-brand {
+        .navbar-brand {
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--white);
         }
 
-        /* Sidebar */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -300px;
-            width: 300px;
-            height: 100%;
-            background: linear-gradient(180deg, var(--blue-dark), var(--blue-medium));
+        .navbar-nav .nav-link {
             color: var(--white);
-            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
-            transition: all 0.4s ease;
-            z-index: 1050;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar.active {
-            left: 0;
-        }
-
-        .sidebar .header {
-            padding: 20px;
-            background-color: var(--blue-dark);
-            text-align: center;
-        }
-
-        .sidebar .header .user-name {
-            font-size: 1.4rem;
             font-weight: bold;
+            padding: 10px 15px;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
             color: var(--blue-light);
         }
 
-        .sidebar ul {
-            list-style: none;
-            padding: 20px;
-            margin: 0;
-            flex: 1;
-        }
-
-        .sidebar ul li {
-            margin: 15px 0;
-        }
-
-        .sidebar ul li a {
-            display: flex;
-            align-items: center;
-            color: var(--white);
-            text-decoration: none;
-            font-size: 1.1rem;
-            padding: 10px 20px;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar ul li a:hover {
-            background: var(--blue-light);
-            color: var(--black);
-        }
-
-        .sidebar ul li a i {
-            margin-right: 15px;
-        }
-
-        .logout-section {
-            padding: 20px;
-            text-align: center;
-            background: var(--blue-dark);
-        }
-
-        .logout-link {
-            display: inline-block;
-            padding: 12px 25px;
-            color: var(--white);
-            font-size: 1rem;
+        .navbar-nav .logout-link {
+            color: #ff4d4d;
             font-weight: bold;
-            text-decoration: none;
-            border: 2px solid var(--white);
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            background: var(--blue-light);
         }
 
-        .logout-link:hover {
-            background: var(--white);
-            color: var(--blue-dark);
+        .navbar-nav .logout-link:hover {
+            color: #ff9999;
         }
 
-        .sidebar .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--white);
+        /* Ajuste para el contenido debajo de la barra fija */
+        body {
+            padding-top: 70px; /* Altura de la barra fija */
         }
 
         /* Footer */
@@ -178,41 +104,42 @@
 <body>
     <div id="app">
         <!-- Navbar -->
-        <nav class="navbar-custom">
-            <button class="btn btn-light me-3" id="menuToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <a class="navbar-brand" href="{{ url('/') }}">
-                Aluvid
-            </a>
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+            <div class="container">
+                <a class="navbar-brand" href="{{ url('/') }}">ALUVID Ixmiquilpan</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <!-- Enlace a Inicio -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('productos.sectores') }}"><i class="fas fa-home"></i> Inicio</a>
+                        </li>
+                        <!-- Sectores -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('sector.tipos', ['sectorId' => 1]) }}"><i class="fas fa-gem"></i> Vidrio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('sector.tipos', ['sectorId' => 3]) }}"><i class="fas fa-window-maximize"></i> Aluminio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('sector.tipos', ['sectorId' => 2]) }}"><i class="fas fa-tools"></i> Herrajes</a>
+                        </li>
+                        <!-- Cerrar Sesión -->
+                        <li class="nav-item">
+                            <a class="nav-link logout-link" href="{{ route('logout') }}" 
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </nav>
-
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <span class="close-btn" id="closeSidebar">&times;</span>
-            @auth
-                <div class="header">
-                    <p class="user-name">{{ Auth::user()->name }}</p>
-                </div>
-            @endauth
-            <ul>
-                <li><a href="/cotizaciones/vidrio"><i class="fas fa-calculator"></i> Cotizar</a></li>
-                <li><a href="/about"><i class="fas fa-info-circle"></i> Acerca de</a></li>
-                <li><a href="/services"><i class="fas fa-concierge-bell"></i> Servicios</a></li>
-                <li><a href="/contact"><i class="fas fa-envelope"></i> Contacto</a></li>
-            </ul>
-            @auth
-                <div class="logout-section">
-                    <a class="logout-link" href="{{ route('logout') }}"
-                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        Cerrar Sesión
-                    </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                        @csrf
-                    </form>
-                </div>
-            @endauth
-        </div>
 
         <!-- Main Content -->
         <main class="py-4">
@@ -222,9 +149,10 @@
         <!-- Footer -->
         <footer class="footer">
             <div class="footer-links">
-                <a href="/">Inicio</a>
-                <a href="/about">Acerca de</a>
-                <a href="/contact">Contacto</a>
+                <a  href="{{ route('productos.sectores') }}" >Inicio</a>
+                <a  href="{{ route('sector.tipos', ['sectorId' => 1]) }}" >Vidrio</a>
+                <a  href="{{ route('sector.tipos', ['sectorId' => 3]) }}" > Aluminio</a>
+                <a  href="{{ route('sector.tipos', ['sectorId' => 2]) }}" > Herrajes</a>
             </div>
             <div class="social-icons mt-3">
                 <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -237,18 +165,5 @@
 
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Sidebar Toggle Script -->
-    <script>
-        const sidebar = document.getElementById('sidebar');
-
-        document.getElementById('menuToggle').addEventListener('click', function () {
-            sidebar.classList.add('active');
-        });
-
-        document.getElementById('closeSidebar').addEventListener('click', function () {
-            sidebar.classList.remove('active');
-        });
-    </script>
 </body>
 </html>

@@ -23,6 +23,12 @@
     <div class="col-md-4 mb-4">
         <div class="card shadow-sm h-100">
             <div class="card-body text-center">
+            
+                            <img src="{{ asset('storage/' . $tipo->imagen) }}" 
+                                 alt="{{ $tipo->nombre }}" 
+                                 class="img-thumbnail me-3" 
+                                 style="height: 100px; width: 100px; object-fit: cover;">
+                           
                 <h5 class="card-title">{{ $tipo->nombre }}</h5>
                 <p class="card-text text-muted">{{ $tipo->descripcion }}</p>
                 <a href="{{ route('admin.showProductos', ['tipoId' => $tipo->id]) }}" class="btn btn-outline-primary mt-auto">Ver Productos</a>
@@ -31,13 +37,14 @@
 
                 <!-- Formulario para eliminar -->
                 <form action="{{ route('admin.destroyTipo', ['tipoId' => $tipo->id]) }}" method="POST" class="d-inline-block">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger btn-sm"
-                            onclick="return confirm('¿Estás seguro de que deseas eliminar este tipo?');">
-                        Eliminar
-                    </button>
-                </form>
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="btn btn-danger btn-sm"
+            onclick="return confirm('¿Estás seguro de que deseas eliminar este tipo?');">
+        Eliminar
+    </button>
+</form>
+
             </div>
         </div>
     </div>
@@ -66,4 +73,16 @@
         font-weight: 600;
     }
 </style>
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
 @endsection

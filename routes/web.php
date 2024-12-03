@@ -15,14 +15,15 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+Route::get('/sectores', [ProductoController::class, 'sectores'])->name('productos.sectores');
 
 Route::get('/', function () {
     return view('welcome');
-})->name('home');
+})->name('welcome');
 
 
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
-Route::get('/sectores', [ProductController::class, 'showSectores'])->name('productos.sectores');
+Route::get('/sectores', [AdminProductController::class, 'showSectores'])->name('productos.sectores');
 
 // Rutas del perfil de usuario
 Route::middleware('auth')->group(function () {
@@ -84,6 +85,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('/cotizaciones/vidrio', [CotizacionController::class, 'index'])->name('cotizaciones.vidrio'); // Para mostrar la vista
 Route::post('/cotizaciones/vidrio', [CotizacionController::class, 'calcular'])->name('cotizaciones.calcular'); // Para procesar el formulario
+Route::get('/tipos/{sectorId}', [CotizacionController::class, 'showSector'])->name('sector.tipos');
+Route::post('/cotizacion/calcular', [CotizacionController::class, 'calcularCotizacion'])->name('cotizaciones.calcular');
 
 });
 
@@ -91,4 +94,4 @@ require __DIR__ . '/auth.php';
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+

@@ -15,7 +15,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home'; // Puedes dejarlo como fallback.
+    protected $redirectTo = '/sectores'; // Puedes dejarlo como fallback.
 
     /**
      * Create a new controller instance.

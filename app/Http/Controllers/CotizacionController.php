@@ -10,13 +10,12 @@ class CotizacionController extends Controller
 {
     public function index()
     {
-        // Obtén el sector de vidrio con sus tipos y productos relacionados
-        $sector = Sector::with('tipos.productos')->where('nombre', 'vidrio')->firstOrFail();
-
+        $sector = Sector::with('tipos.productos')->where('nombre', 'Vidrio')->firstOrFail();
         return view('productos.cotizaciones.vidrio', compact('sector'));
     }
+    
 
-    public function calcular(Request $request)
+    public function calcularCotizacion(Request $request)
     {
         $request->validate([
             'ancho' => 'required|numeric|min:1',
@@ -36,16 +35,23 @@ class CotizacionController extends Controller
         $precio_total = $area * $producto->precio;
     
         // Retorna la vista con el resultado
-        return view('productos.cotizaciones.vidrio', [
-            'sector' => Sector::with('tipos.productos')->where('nombre', 'Vidrio')->first(),
-            'resultado' => [
-                'producto' => $producto->nombre,
-                'precio_total' => number_format($precio_total, 2),
-                'ancho' => $request->ancho,
-                'alto' => $request->alto,
-            ],
+        return back()->with('resultado', [
+            'producto' => $producto->nombre,
+            'ancho' => $request->ancho,
+            'alto' => $request->alto,
+            'precio_total' => number_format($precio_total, 2),
         ]);
     }
+    public function showSector($sectorId)
+    {
+        // Cargar el sector con sus tipos y productos
+        $sector = Sector::with(['tipos.productos'])->findOrFail($sectorId);
+    
+        // Retornar la vista de tipos con el sector
+        return view('productos.tipos', compact('sector'));
+    }
+    
+
     
 
 }

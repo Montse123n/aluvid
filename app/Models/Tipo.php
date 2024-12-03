@@ -11,7 +11,7 @@ class Tipo extends Model
 
     protected $table = 'tipos';
 
-    protected $fillable = ['nombre', 'descripcion', 'sector_id'];
+    protected $fillable = ['nombre', 'descripcion', 'sector_id', 'imagen'];
 
     // Relación inversa con Sector
     public function sector()

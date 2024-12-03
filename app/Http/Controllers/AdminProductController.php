@@ -27,7 +27,7 @@ class AdminProductController extends Controller
         return view('admin.tipos', compact('tipos', 'sector'));
     }
 
-    // Mostrar productos específicos dentro de un tipo
+    
     // Mostrar productos específicos dentro de un tipo
 public function showProductos($tipoId)
 {
@@ -54,20 +54,30 @@ public function showProductos($tipoId)
 
     // Guardar un nuevo tipo
     public function storeTipo(Request $request, $sectorId)
-    {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'descripcion' => 'required|string',
-        ]);
+{
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'descripcion' => 'required|string',
+        'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        Tipo::create([
-            'nombre' => $request->nombre,
-            'descripcion' => $request->descripcion,
-            'sector_id' => $sectorId,
-        ]);
+    $tipoData = [
+        'nombre' => $request->nombre,
+        'descripcion' => $request->descripcion,
+        'sector_id' => $sectorId,
+    ];
 
-        return redirect()->route('admin.showTipos', ['sectorId' => $sectorId])->with('success', 'Tipo creado con éxito.');
+    // Manejar la subida de la imagen
+    if ($request->hasFile('imagen')) {
+        $path = $request->file('imagen')->store('tipos', 'public');
+        $tipoData['imagen'] = $path;
     }
+
+    Tipo::create($tipoData);
+
+    return redirect()->route('admin.showTipos', ['sectorId' => $sectorId])
+        ->with('success', 'Tipo creado con éxito.');
+}
     public function editTipo($tipoId)
     {
         $tipo = Tipo::findOrFail($tipoId);
@@ -80,6 +90,7 @@ public function showProductos($tipoId)
         $request->validate([
             'nombre' => 'required|string|max:255',
             'descripcion' => 'required|string',
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $tipo = Tipo::findOrFail($tipoId);
@@ -87,6 +98,16 @@ public function showProductos($tipoId)
             'nombre' => $request->nombre,
             'descripcion' => $request->descripcion,
         ]);
+        // Manejar la subida de la imagen
+    if ($request->hasFile('imagen')) {
+        // Eliminar la imagen anterior si existe
+        if ($tipo->imagen) {
+            Storage::disk('public')->delete($tipo->imagen);
+        }
+        $path = $request->file('imagen')->store('tipos', 'public');
+        $tipoData['imagen'] = $path;
+    }
+
 
         return redirect()->route('admin.showTipos', ['sectorId' => $tipo->sector_id])
             ->with('success', 'Tipo actualizado con éxito.');
@@ -94,18 +115,14 @@ public function showProductos($tipoId)
 
     // Eliminar un tipo
     public function destroyTipo($tipoId)
-    {
-        $tipo = Tipo::findOrFail($tipoId);
+{
+    $tipo = Tipo::findOrFail($tipoId);
+    $tipo->delete();
 
-        if ($tipo->productos()->count() > 0) {
-            return redirect()->back()->with('error', 'No se puede eliminar un tipo con productos asociados.');
-        }
+    return redirect()->route('admin.showTipos', ['sectorId' => $tipo->sector_id])
+        ->with('success', 'Tipo eliminado con éxito.');
+}
 
-        $tipo->delete();
-
-        return redirect()->route('admin.showTipos', ['sectorId' => $tipo->sector_id])
-            ->with('success', 'Tipo eliminado con éxito.');
-    }
 
     // Mostrar formulario de creación de producto
     public function createProducto($tipoId)
